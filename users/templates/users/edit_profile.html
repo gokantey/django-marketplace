@@ -1,29 +1,131 @@
 {% extends 'listings/base.html' %}
+{% block title %}Edit Profile — Marketplace{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .edit-wrap {
+        max-width: 640px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+        animation: fadeUp 0.4s ease both;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .edit-header {
+        margin-bottom: 2rem;
+    }
+
+    .edit-header a {
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-bottom: 1rem;
+        transition: color 0.2s;
+    }
+
+    .edit-header a:hover { color: var(--gold); }
+
+    .edit-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.9rem;
+        font-weight: 700;
+    }
+
+    .edit-header p {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+    }
+
+    .edit-section {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.75rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .edit-section h3 {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+    }
+
+    @media (max-width: 500px) {
+        .two-col { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="max-width: 540px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-    <h2 style="margin-bottom: 1.5rem;">Edit Profile</h2>
-    <form method="POST">
+<div class="edit-wrap">
+    <div class="edit-header">
+        <a href="{% url 'profile' request.user.username %}">← Back to profile</a>
+        <h1>Edit Profile</h1>
+        <p>Update your account information and public profile.</p>
+    </div>
+
+    <form method="POST" novalidate>
         {% csrf_token %}
-        <h4 style="margin-bottom: 0.5rem;">Account Info</h4>
-        {% for field in u_form %}
-        <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ field.label }}</label>
-            {{ field }}
-        </div>
-        {% endfor %}
 
-        <h4 style="margin: 1.5rem 0 0.5rem;">Profile Info</h4>
-        {% for field in p_form %}
-        <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ field.label }}</label>
-            {{ field }}
+        <!-- Account Info -->
+        <div class="edit-section">
+            <h3>Account Information</h3>
+            <div class="two-col">
+                {% for field in u_form %}
+                <div class="form-group">
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <p class="form-error">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
         </div>
-        {% endfor %}
 
-        <button type="submit" style="background: #2c3e50; color: white; padding: 0.6rem 1.5rem;
-                border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 1rem;">
-            Save Changes
-        </button>
+        <!-- Profile Info -->
+        <div class="edit-section">
+            <h3>Profile Details</h3>
+            {% for field in p_form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <p class="form-error">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'profile' request.user.username %}" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
     </form>
 </div>
 {% endblock %}

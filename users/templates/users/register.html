@@ -1,23 +1,132 @@
 {% extends 'listings/base.html' %}
+{% block title %}Create Account — Marketplace{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .auth-wrap {
+        min-height: calc(100vh - 68px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        position: relative;
+    }
+
+    .auth-wrap::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 50%; transform: translateX(-50%);
+        width: 800px;
+        height: 500px;
+        background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .auth-box {
+        width: 100%;
+        max-width: 460px;
+        animation: fadeUp 0.4s ease both;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-logo {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        color: var(--gold);
+        margin-bottom: 1.25rem;
+        display: block;
+    }
+
+    .auth-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+
+    .auth-header p {
+        color: var(--muted);
+        font-size: 0.9rem;
+    }
+
+    .auth-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 2rem;
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 1.25rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+    }
+
+    .auth-footer a {
+        color: var(--gold);
+        text-decoration: none;
+    }
+
+    .auth-footer a:hover { text-decoration: underline; }
+
+    .divider-text {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--muted);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin: 1.25rem 0;
+    }
+
+    .divider-text::before, .divider-text::after {
+        content: '';
+        flex: 1;
+        border-top: 1px solid var(--border);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="max-width: 480px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-    <h2 style="margin-bottom: 1.5rem;">Create an Account</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {% for field in form %}
-        <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}
-            <p style="color: red; font-size: 0.85rem;">{{ field.errors.0 }}</p>
-            {% endif %}
+<div class="auth-wrap">
+    <div class="auth-box">
+        <div class="auth-header">
+            <span class="auth-logo">◈ Marketplace</span>
+            <h1>Create an account</h1>
+            <p>Join thousands of buyers and sellers</p>
         </div>
-        {% endfor %}
-        <button type="submit" style="background: #2c3e50; color: white; padding: 0.6rem 1.5rem;
-                border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 1rem;">
-            Register
-        </button>
-    </form>
-    <p style="margin-top: 1rem; text-align: center;">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+        <div class="auth-card">
+            <form method="POST" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <p class="form-error">{{ field.errors.0 }}</p>
+                    {% endif %}
+                    {% if field.help_text %}
+                    <p style="font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem;">{{ field.help_text }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary btn-full" style="margin-top: 0.5rem; width: 100%; justify-content: center; padding: 0.85rem;">
+                    Create Account →
+                </button>
+            </form>
+        </div>
+        <p class="auth-footer">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+    </div>
 </div>
 {% endblock %}

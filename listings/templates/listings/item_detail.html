@@ -1,40 +1,350 @@
 {% extends 'listings/base.html' %}
 
+{% block title %}{{ item.name }} — Marketplace{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .detail-wrap {
+        max-width: 1100px;
+        margin: 2.5rem auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    /* IMAGE PANEL */
+    .image-panel {
+        position: sticky;
+        top: 90px;
+    }
+
+    .main-image {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        display: block;
+    }
+
+    .image-placeholder {
+        width: 100%;
+        aspect-ratio: 4/3;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 5rem;
+        color: var(--muted);
+        gap: 1rem;
+    }
+
+    .image-placeholder p {
+        font-size: 0.85rem;
+        color: var(--muted);
+    }
+
+    /* INFO PANEL */
+    .info-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: color 0.2s;
+        margin-bottom: 0.5rem;
+    }
+
+    .back-link:hover { color: var(--gold); }
+
+    .item-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+        font-weight: 700;
+        line-height: 1.2;
+        color: var(--text);
+    }
+
+    .item-price {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--gold);
+    }
+
+    .item-price span {
+        font-size: 1rem;
+        color: var(--muted);
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 400;
+    }
+
+    .info-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+    }
+
+    .info-card h4 {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        margin-bottom: 0.75rem;
+    }
+
+    .item-description {
+        font-size: 0.95rem;
+        line-height: 1.75;
+        color: #b8b5af;
+    }
+
+    /* METADATA ROWS */
+    .meta-rows {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.875rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .meta-row:last-child { border-bottom: none; }
+
+    .meta-row .label { color: var(--muted); }
+    .meta-row .value { color: var(--text); font-weight: 500; }
+
+    /* SELLER CARD */
+    .seller-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        text-decoration: none;
+        display: block;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .seller-card:hover {
+        border-color: rgba(201,168,76,0.35);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .seller-card h4 {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        margin-bottom: 0.9rem;
+    }
+
+    .seller-info {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+    }
+
+    .seller-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--gold), #8b6914);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0e0f13;
+        flex-shrink: 0;
+    }
+
+    .seller-name {
+        font-weight: 600;
+        color: var(--text);
+        font-size: 0.95rem;
+    }
+
+    .seller-sub {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 0.1rem;
+    }
+
+    .seller-arrow {
+        margin-left: auto;
+        color: var(--muted);
+        transition: color 0.2s, transform 0.2s;
+    }
+
+    .seller-card:hover .seller-arrow {
+        color: var(--gold);
+        transform: translateX(3px);
+    }
+
+    /* CTA */
+    .cta-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .btn-full {
+        width: 100%;
+        justify-content: center;
+        padding: 0.85rem;
+        font-size: 0.95rem;
+    }
+
+    /* ANIMATE IN */
+    .info-panel > * {
+        animation: fadeUp 0.4s ease both;
+    }
+    .info-panel > *:nth-child(1) { animation-delay: 0.05s; }
+    .info-panel > *:nth-child(2) { animation-delay: 0.10s; }
+    .info-panel > *:nth-child(3) { animation-delay: 0.15s; }
+    .info-panel > *:nth-child(4) { animation-delay: 0.20s; }
+    .info-panel > *:nth-child(5) { animation-delay: 0.25s; }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(14px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+        .detail-wrap {
+            grid-template-columns: 1fr;
+        }
+        .image-panel { position: static; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-top: 1.5rem;">
-    <a href="{% url 'item-list' %}" style="color: #2c3e50; text-decoration: none;">← Back to listings</a>
+<div class="detail-wrap">
 
-    {% if item.image_url %}
-    <img src="{{ item.image_url }}" alt="{{ item.name }}"
-         style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin: 1rem 0;">
-    {% endif %}
-
-    <span style="font-size: 0.8rem; background: #eaf0fb; color: #2c3e50;
-                 padding: 3px 10px; border-radius: 20px;">{{ item.get_category_display }}</span>
-
-    <h1 style="margin: 0.8rem 0;">{{ item.name }}</h1>
-    <p style="font-size: 1.8rem; font-weight: bold; color: #27ae60;">${{ item.price }}</p>
-    <p style="margin: 1rem 0; line-height: 1.7; color: #555;">{{ item.description }}</p>
-
-    <p style="font-size: 0.85rem; color: #999;">Listed on: {{ item.created_at|date:"F j, Y" }}</p>
-
-    <p style="margin-top: 1rem;">
-        
-{% if item.seller %}
-<p style="margin-top: 0.5rem; color: #555;">
-    Sold by: 
-    <a href="{% url 'profile' item.seller.username %}" style="color: #2c3e50; font-weight: bold;">
-        {{ item.seller.username }}
-    </a>
-</p>
-{% endif %}
-
-        Status:
-        {% if item.is_available %}
-        <span style="color: green; font-weight: bold;">✅ Available</span>
+    <!-- LEFT: Image -->
+    <div class="image-panel">
+        {% if item.image_url %}
+        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="main-image">
         {% else %}
-        <span style="color: red; font-weight: bold;">❌ Sold</span>
+        <div class="image-placeholder">
+            {% if item.category == 'electronics' %}📱
+            {% elif item.category == 'clothing' %}👗
+            {% elif item.category == 'furniture' %}🛋️
+            {% else %}📦{% endif %}
+            <p>No image provided</p>
+        </div>
         {% endif %}
-    </p>
+    </div>
+
+    <!-- RIGHT: Info -->
+    <div class="info-panel">
+        <div>
+            <a href="{% url 'item-list' %}" class="back-link">← Back to listings</a>
+            <div style="display:flex; gap:0.5rem; margin-bottom: 0.75rem; flex-wrap:wrap;">
+                <span class="badge badge-category">{{ item.get_category_display }}</span>
+                {% if item.is_available %}
+                <span class="badge badge-available">Available</span>
+                {% else %}
+                <span class="badge badge-sold">Sold</span>
+                {% endif %}
+            </div>
+            <h1 class="item-title">{{ item.name }}</h1>
+        </div>
+
+        <div class="item-price">
+            ${{ item.price }} <span>/ fixed price</span>
+        </div>
+
+        <!-- Description -->
+        <div class="info-card">
+            <h4>Description</h4>
+            <p class="item-description">{{ item.description }}</p>
+        </div>
+
+        <!-- Details -->
+        <div class="info-card">
+            <h4>Details</h4>
+            <div class="meta-rows">
+                <div class="meta-row">
+                    <span class="label">Category</span>
+                    <span class="value">{{ item.get_category_display }}</span>
+                </div>
+                <div class="meta-row">
+                    <span class="label">Condition</span>
+                    <span class="value">Used — Good</span>
+                </div>
+                <div class="meta-row">
+                    <span class="label">Listed</span>
+                    <span class="value">{{ item.created_at|date:"F j, Y" }}</span>
+                </div>
+                <div class="meta-row">
+                    <span class="label">Status</span>
+                    <span class="value" style="color: {% if item.is_available %}var(--green){% else %}var(--red){% endif %}">
+                        {% if item.is_available %}Available{% else %}Sold{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seller -->
+        {% if item.seller %}
+        <a href="{% url 'profile' item.seller.username %}" class="seller-card">
+            <h4>Seller</h4>
+            <div class="seller-info">
+                <div class="seller-avatar">{{ item.seller.username|first|upper }}</div>
+                <div>
+                    <div class="seller-name">{{ item.seller.username }}</div>
+                    <div class="seller-sub">Member since {{ item.seller.date_joined|date:"F Y" }}</div>
+                </div>
+                <span class="seller-arrow">→</span>
+            </div>
+        </a>
+        {% endif %}
+
+        <!-- CTA -->
+        {% if item.is_available %}
+        <div class="cta-group">
+            {% if request.user.is_authenticated %}
+            <button class="btn btn-primary btn-full" onclick="contactSeller()">💬 Contact Seller</button>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-full">Sign in to Contact Seller</a>
+            {% endif %}
+            <a href="{% url 'item-list' %}" class="btn btn-outline btn-full">Browse More Listings</a>
+        </div>
+        {% else %}
+        <div class="info-card" style="text-align:center; color: var(--muted);">
+            <p>This item has been sold.</p>
+        </div>
+        {% endif %}
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function contactSeller() {
+    alert('Contact feature coming soon! For now, reach out to the seller directly.');
+}
+</script>
 {% endblock %}
