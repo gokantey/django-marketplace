@@ -1,0 +1,29 @@
+{% extends 'listings/base.html' %}
+{% block content %}
+<div style="max-width: 540px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+    <h2 style="margin-bottom: 1.5rem;">Edit Profile</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <h4 style="margin-bottom: 0.5rem;">Account Info</h4>
+        {% for field in u_form %}
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ field.label }}</label>
+            {{ field }}
+        </div>
+        {% endfor %}
+
+        <h4 style="margin: 1.5rem 0 0.5rem;">Profile Info</h4>
+        {% for field in p_form %}
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ field.label }}</label>
+            {{ field }}
+        </div>
+        {% endfor %}
+
+        <button type="submit" style="background: #2c3e50; color: white; padding: 0.6rem 1.5rem;
+                border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 1rem;">
+            Save Changes
+        </button>
+    </form>
+</div>
+{% endblock %}

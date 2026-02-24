@@ -1,0 +1,55 @@
+{% extends 'listings/base.html' %}
+{% block content %}
+<div style="background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-top: 1.5rem;">
+    
+    <!-- Profile Header -->
+    <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem;">
+        {% if profile_user.profile.profile_picture %}
+        <img src="{{ profile_user.profile.profile_picture }}" alt="Profile"
+             style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover;">
+        {% else %}
+        <div style="width: 90px; height: 90px; border-radius: 50%; background: #2c3e50;
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 2rem; color: white;">
+            {{ profile_user.username|first|upper }}
+        </div>
+        {% endif %}
+        <div>
+            <h2>{{ profile_user.get_full_name|default:profile_user.username }}</h2>
+            <p style="color: #888;">@{{ profile_user.username }}</p>
+            {% if profile_user.profile.location %}
+            <p style="color: #666;">📍 {{ profile_user.profile.location }}</p>
+            {% endif %}
+            <p style="color: #999; font-size: 0.85rem;">Member since {{ profile_user.date_joined|date:"F Y" }}</p>
+        </div>
+        {% if request.user == profile_user %}
+        <a href="{% url 'edit-profile' %}" style="margin-left: auto; background: #2c3e50; color: white;
+           padding: 0.5rem 1rem; border-radius: 5px; text-decoration: none;">Edit Profile</a>
+        {% endif %}
+    </div>
+
+    {% if profile_user.profile.bio %}
+    <p style="margin-bottom: 2rem; color: #555;">{{ profile_user.profile.bio }}</p>
+    {% endif %}
+
+    <!-- Seller's Listings -->
+    <h3 style="margin-bottom: 1rem;">{{ profile_user.username }}'s Listings ({{ listings.count }})</h3>
+    {% if listings %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
+        {% for item in listings %}
+        <div style="border: 1px solid #eee; border-radius: 8px; padding: 1rem;">
+            {% if item.image_url %}
+            <img src="{{ item.image_url }}" alt="{{ item.name }}"
+                 style="width: 100%; height: 140px; object-fit: cover; border-radius: 6px; margin-bottom: 0.5rem;">
+            {% endif %}
+            <h4>{{ item.name }}</h4>
+            <p style="color: #27ae60; font-weight: bold;">${{ item.price }}</p>
+            <a href="{% url 'item-detail' item.pk %}" style="font-size: 0.85rem; color: #2c3e50;">View →</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="color: #888;">No listings yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

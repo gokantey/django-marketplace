@@ -1,0 +1,27 @@
+{% extends 'listings/base.html' %}
+{% block content %}
+<div style="max-width: 420px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+    <h2 style="margin-bottom: 1.5rem;">Log In</h2>
+    {% if messages %}
+        {% for message in messages %}
+        <p style="color: red;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="POST">
+        {% csrf_token %}
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: bold; margin-bottom: 4px;">Username</label>
+            <input type="text" name="username" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 5px;">
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: bold; margin-bottom: 4px;">Password</label>
+            <input type="password" name="password" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 5px;">
+        </div>
+        <button type="submit" style="background: #2c3e50; color: white; padding: 0.6rem 1.5rem;
+                border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 1rem;">
+            Log In
+        </button>
+    </form>
+    <p style="margin-top: 1rem; text-align: center;">Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+</div>
+{% endblock %}

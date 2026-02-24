@@ -1,0 +1,23 @@
+{% extends 'listings/base.html' %}
+{% block content %}
+<div style="max-width: 480px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+    <h2 style="margin-bottom: 1.5rem;">Create an Account</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <p style="color: red; font-size: 0.85rem;">{{ field.errors.0 }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" style="background: #2c3e50; color: white; padding: 0.6rem 1.5rem;
+                border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 1rem;">
+            Register
+        </button>
+    </form>
+    <p style="margin-top: 1rem; text-align: center;">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+</div>
+{% endblock %}

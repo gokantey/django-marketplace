@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Marketplace</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; color: #333; }
+        nav { background: #2c3e50; padding: 1rem 2rem; }
+        nav a { color: white; text-decoration: none; font-size: 1.4rem; font-weight: bold; }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <nav style="background: #2c3e50; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <a href="{% url 'item-list' %}" style="color: white; text-decoration: none; font-size: 1.4rem; font-weight: bold;">🛒 Marketplace</a>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'profile' request.user.username %}" style="color: white; text-decoration: none;">👤 {{ request.user.username }}</a>
+            <a href="{% url 'logout' %}" style="color: white; text-decoration: none;">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}" style="color: white; text-decoration: none;">Login</a>
+            <a href="{% url 'register' %}" style="color: white; text-decoration: none; background: #27ae60;
+               padding: 0.4rem 0.9rem; border-radius: 5px;">Register</a>
+        {% endif %}
+    </div>
+</nav>
+        <a href="{% url 'item-list' %}">🛒 Marketplace</a>
+    </nav>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
