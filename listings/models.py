@@ -17,7 +17,7 @@ class Item(models.Model):
     image_url = models.URLField(blank=True, null=True)
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='items', null=True, blank=True)
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listings', null=True, blank=True)
 
     def __str__(self):
         return self.name
