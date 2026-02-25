@@ -333,16 +333,22 @@
         ◈ <span>Market</span>Place
     </a>
     <div class="nav-links">
+
         {% if request.user.is_authenticated %}
-            <a href="{% url 'profile' request.user.username %}" class="nav-user">
-                <div class="avatar-circle">{{ request.user.username|first|upper }}</div>
-                {{ request.user.username }}
-            </a>
-            <a href="{% url 'logout' %}" class="nav-link">Sign out</a>
-        {% else %}
-            <a href="{% url 'login' %}" class="nav-link">Sign in</a>
-            <a href="{% url 'register' %}" class="nav-btn">Get Started</a>
-        {% endif %}
+    
+    <a href="{% url 'inbox' %}" class="nav-link" style="position:relative;">
+        📥 Inbox
+        {% with unread=request.user.received_messages.filter.is_read %}
+        {% endwith %}
+    </a>
+    <a href="{% url 'profile' request.user.username %}" class="nav-user">
+        <div class="avatar-circle">{{ request.user.username|first|upper }}</div>
+        {{ request.user.username }}
+    </a>
+    <a href="{% url 'logout' %}" class="nav-link">Sign out</a>
+{% endif %}
+
+        
     </div>
 </nav>
 
@@ -368,6 +374,18 @@
         });
     }, 3500);
 </script>
+
+ <script>
+        // Auto-dismiss messages
+        setTimeout(() => {
+            document.querySelectorAll('.message').forEach(m => {
+                m.style.transition = 'opacity 0.5s';
+                m.style.opacity = '0';
+                setTimeout(() => m.remove(), 500);
+            });
+        }, 3500);
+    </script>
+
 
 {% block extra_scripts %}{% endblock %}
 </body>

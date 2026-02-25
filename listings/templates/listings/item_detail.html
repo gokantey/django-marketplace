@@ -14,7 +14,6 @@
         align-items: start;
     }
 
-    /* IMAGE PANEL */
     .image-panel {
         position: sticky;
         top: 90px;
@@ -49,7 +48,6 @@
         color: var(--muted);
     }
 
-    /* INFO PANEL */
     .info-panel {
         display: flex;
         flex-direction: column;
@@ -112,7 +110,6 @@
         color: #b8b5af;
     }
 
-    /* METADATA ROWS */
     .meta-rows {
         display: flex;
         flex-direction: column;
@@ -129,11 +126,9 @@
     }
 
     .meta-row:last-child { border-bottom: none; }
-
     .meta-row .label { color: var(--muted); }
     .meta-row .value { color: var(--text); font-weight: 500; }
 
-    /* SELLER CARD */
     .seller-card {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -200,7 +195,6 @@
         transform: translateX(3px);
     }
 
-    /* CTA */
     .cta-group {
         display: flex;
         flex-direction: column;
@@ -214,7 +208,30 @@
         font-size: 0.95rem;
     }
 
-    /* ANIMATE IN */
+    .message-form-wrap {
+        display: none;
+    }
+
+    .message-form-wrap textarea {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        color: var(--text);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.9rem;
+        resize: vertical;
+        outline: none;
+        margin-bottom: 0.75rem;
+        transition: border-color 0.2s;
+    }
+
+    .message-form-wrap textarea:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+    }
+
     .info-panel > * {
         animation: fadeUp 0.4s ease both;
     }
@@ -223,17 +240,15 @@
     .info-panel > *:nth-child(3) { animation-delay: 0.15s; }
     .info-panel > *:nth-child(4) { animation-delay: 0.20s; }
     .info-panel > *:nth-child(5) { animation-delay: 0.25s; }
+    .info-panel > *:nth-child(6) { animation-delay: 0.30s; }
 
     @keyframes fadeUp {
         from { opacity: 0; transform: translateY(14px); }
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* RESPONSIVE */
     @media (max-width: 768px) {
-        .detail-wrap {
-            grid-template-columns: 1fr;
-        }
+        .detail-wrap { grid-template-columns: 1fr; }
         .image-panel { position: static; }
     }
 </style>
@@ -245,33 +260,37 @@
     <!-- LEFT: Image -->
     <div class="image-panel">
         {% if item.image_url %}
-        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="main-image">
+            <img src="{{ item.image_url }}" alt="{{ item.name }}" class="main-image">
         {% else %}
-        <div class="image-placeholder">
-            {% if item.category == 'electronics' %}📱
-            {% elif item.category == 'clothing' %}👗
-            {% elif item.category == 'furniture' %}🛋️
-            {% else %}📦{% endif %}
-            <p>No image provided</p>
-        </div>
+            <div class="image-placeholder">
+                {% if item.category == 'electronics' %}📱
+                {% elif item.category == 'clothing' %}👗
+                {% elif item.category == 'furniture' %}🛋️
+                {% else %}📦
+                {% endif %}
+                <p>No image provided</p>
+            </div>
         {% endif %}
     </div>
 
     <!-- RIGHT: Info -->
     <div class="info-panel">
+
+        <!-- Title & Badges -->
         <div>
             <a href="{% url 'item-list' %}" class="back-link">← Back to listings</a>
             <div style="display:flex; gap:0.5rem; margin-bottom: 0.75rem; flex-wrap:wrap;">
                 <span class="badge badge-category">{{ item.get_category_display }}</span>
                 {% if item.is_available %}
-                <span class="badge badge-available">Available</span>
+                    <span class="badge badge-available">Available</span>
                 {% else %}
-                <span class="badge badge-sold">Sold</span>
+                    <span class="badge badge-sold">Sold</span>
                 {% endif %}
             </div>
             <h1 class="item-title">{{ item.name }}</h1>
         </div>
 
+        <!-- Price -->
         <div class="item-price">
             ${{ item.price }} <span>/ fixed price</span>
         </div>
@@ -289,10 +308,6 @@
                 <div class="meta-row">
                     <span class="label">Category</span>
                     <span class="value">{{ item.get_category_display }}</span>
-                </div>
-                <div class="meta-row">
-                    <span class="label">Condition</span>
-                    <span class="value">Used — Good</span>
                 </div>
                 <div class="meta-row">
                     <span class="label">Listed</span>
@@ -316,6 +331,15 @@
                 <div>
                     <div class="seller-name">{{ item.seller.username }}</div>
                     <div class="seller-sub">Member since {{ item.seller.date_joined|date:"F Y" }}</div>
+                    {% if item.seller.profile.phone %}
+                        <div class="seller-sub" style="margin-top:0.3rem;">📞 {{ item.seller.profile.phone }}</div>
+                    {% endif %}
+                    {% if item.seller.email %}
+                        <div class="seller-sub" style="margin-top:0.2rem;">✉️ {{ item.seller.email }}</div>
+                    {% endif %}
+                    {% if item.seller.profile.location %}
+                        <div class="seller-sub" style="margin-top:0.2rem;">📍 {{ item.seller.profile.location }}</div>
+                    {% endif %}
                 </div>
                 <span class="seller-arrow">→</span>
             </div>
@@ -324,27 +348,53 @@
 
         <!-- CTA -->
         {% if item.is_available %}
-        <div class="cta-group">
-            {% if request.user.is_authenticated %}
-            <button class="btn btn-primary btn-full" onclick="contactSeller()">💬 Contact Seller</button>
-            {% else %}
-            <a href="{% url 'login' %}" class="btn btn-primary btn-full">Sign in to Contact Seller</a>
-            {% endif %}
-            <a href="{% url 'item-list' %}" class="btn btn-outline btn-full">Browse More Listings</a>
-        </div>
+            <div class="cta-group">
+                {% if request.user.is_authenticated %}
+                    {% if request.user != item.seller %}
+                        <div class="info-card message-form-wrap" id="contact-form">
+                            <h4>Send a Message</h4>
+                            <form method="POST" action="{% url 'send-message' item.pk %}">
+                                {% csrf_token %}
+                                <textarea name="body" rows="4" placeholder="Write your message to the seller..."></textarea>
+                                <button type="submit" class="btn btn-primary btn-full">Send Message →</button>
+                            </form>
+                        </div>
+                        <button class="btn btn-primary btn-full" id="contact-btn" onclick="toggleForm()">
+                            💬 Contact Seller
+                        </button>
+                    {% else %}
+                        <div class="info-card" style="text-align:center; color:var(--muted);">
+                            <p>This is your own listing.</p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-full">Sign in to Contact Seller</a>
+                {% endif %}
+                <a href="{% url 'item-list' %}" class="btn btn-outline btn-full">Browse More Listings</a>
+            </div>
         {% else %}
-        <div class="info-card" style="text-align:center; color: var(--muted);">
-            <p>This item has been sold.</p>
-        </div>
+            <div class="info-card" style="text-align:center; color: var(--muted);">
+                <p>This item has been sold.</p>
+            </div>
         {% endif %}
+
     </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-function contactSeller() {
-    alert('Contact feature coming soon! For now, reach out to the seller directly.');
+function toggleForm() {
+    const form = document.getElementById('contact-form');
+    const btn = document.getElementById('contact-btn');
+    if (form.style.display === 'none' || form.style.display === '') {
+        form.style.display = 'block';
+        form.style.animation = 'fadeUp 0.3s ease both';
+        btn.textContent = '✕ Cancel';
+    } else {
+        form.style.display = 'none';
+        btn.textContent = '💬 Contact Seller';
+    }
 }
 </script>
 {% endblock %}

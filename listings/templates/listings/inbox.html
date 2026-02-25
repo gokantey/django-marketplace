@@ -1,0 +1,224 @@
+{% extends 'listings/base.html' %}
+{% block title %}Inbox — Marketplace{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .inbox-wrap {
+        max-width: 800px;
+        margin: 2.5rem auto;
+        padding: 0 2rem;
+        animation: fadeUp 0.4s ease both;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .inbox-header {
+        margin-bottom: 2rem;
+    }
+
+    .inbox-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.9rem;
+        font-weight: 700;
+    }
+
+    .inbox-header p { color: var(--muted); font-size: 0.9rem; margin-top: 0.3rem; }
+
+    /* TABS */
+    .tabs {
+        display: flex;
+        gap: 0.25rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.3rem;
+        margin-bottom: 1.5rem;
+        width: fit-content;
+    }
+
+    .tab {
+        padding: 0.5rem 1.25rem;
+        border-radius: 7px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        font-family: 'DM Sans', sans-serif;
+        transition: all 0.2s;
+    }
+
+    .tab.active {
+        background: var(--surface2);
+        color: var(--text);
+    }
+
+    /* MESSAGE CARDS */
+    .message-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .message-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        transition: border-color 0.2s;
+    }
+
+    .message-card.unread {
+        border-left: 3px solid var(--gold);
+    }
+
+    .message-card:hover { border-color: rgba(201,168,76,0.3); }
+
+    .message-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+        gap: 1rem;
+    }
+
+    .message-from {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text);
+    }
+
+    .message-from span {
+        color: var(--muted);
+        font-weight: 400;
+        font-size: 0.85rem;
+    }
+
+    .message-item-link {
+        font-size: 0.8rem;
+        color: var(--gold);
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .message-item-link:hover { text-decoration: underline; }
+
+    .message-body {
+        font-size: 0.9rem;
+        color: #b8b5af;
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        color: var(--muted);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+    }
+
+    .empty-state .icon { font-size: 2.5rem; opacity: 0.3; margin-bottom: 0.75rem; }
+
+    .empty-state h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        color: var(--text);
+        margin-bottom: 0.4rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="inbox-wrap">
+    <div class="inbox-header">
+        <h1>Inbox</h1>
+        <p>Your messages from buyers and sellers.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('received', this)">
+            📥 Received ({{ received.count }})
+        </button>
+        <button class="tab" onclick="switchTab('sent', this)">
+            📤 Sent ({{ sent.count }})
+        </button>
+    </div>
+
+    <!-- Received -->
+    <div id="received" class="message-list">
+        {% if received %}
+            {% for msg in received %}
+            <div class="message-card {% if not msg.is_read %}unread{% endif %}">
+                <div class="message-top">
+                    <div class="message-from">
+                        {{ msg.sender.username }}
+                        <span>messaged you about</span>
+                    </div>
+                    <a href="{% url 'item-detail' msg.item.pk %}" class="message-item-link">
+                        {{ msg.item.name }} →
+                    </a>
+                </div>
+                <p class="message-body">{{ msg.body }}</p>
+                <p class="message-time">{{ msg.created_at|date:"F j, Y · g:i A" }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">📭</div>
+            <h3>No messages yet</h3>
+            <p>When buyers contact you, their messages will appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Sent -->
+    <div id="sent" class="message-list" style="display:none;">
+        {% if sent %}
+            {% for msg in sent %}
+            <div class="message-card">
+                <div class="message-top">
+                    <div class="message-from">
+                        To: {{ msg.receiver.username }}
+                        <span>about</span>
+                    </div>
+                    <a href="{% url 'item-detail' msg.item.pk %}" class="message-item-link">
+                        {{ msg.item.name }} →
+                    </a>
+                </div>
+                <p class="message-body">{{ msg.body }}</p>
+                <p class="message-time">{{ msg.created_at|date:"F j, Y · g:i A" }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">📬</div>
+            <h3>No sent messages</h3>
+            <p>Messages you send to sellers will appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function switchTab(tab, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('received').style.display = tab === 'received' ? 'flex' : 'none';
+    document.getElementById('sent').style.display = tab === 'sent' ? 'flex' : 'none';
+}
+</script>
+{% endblock %}
