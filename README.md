@@ -1,5 +1,13 @@
 # Django Marketplace
 
+## Authors
+## Group 1
+- Gideon Okantey
+- Rahma Sadis**
+- Mary Animpong**
+
+---
+
 A full-featured marketplace web application built with Django, where users can browse listings, view item details, register as buyers or sellers, manage their profiles, and contact sellers directly through an in-app messaging system.
 
 ---
@@ -203,14 +211,7 @@ python manage.py test users
 - [ ] Password reset via email
 - [ ] Deployment to a platform like Railway or Render
 
----
 
-## Author
-
-**Gideon**
-Built as a learning project to explore Django's core features including models, views, templates, authentication, signals, and forms.
-
----
 
 ## License
 
