@@ -2,9 +2,9 @@
 
 ## Authors
 ## Group 1
-- Gideon Okantey
-- Rahma Sadis**
-- Mary Animpong**
+- Gideon Okantey(Group Lead)
+- Rahma Sadis
+- Mary Animpong
 
 ---
 
